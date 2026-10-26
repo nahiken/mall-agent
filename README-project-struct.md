@@ -32,7 +32,7 @@ mall-agent\
 │   │   ├── nodes.py               #   图节点
 │   │   └── skills\skill_base.py   #   Skill 懒加载机制
 │   ├── agents\skills\             # （技能注册）
-│   ├── tools\                     # 22 个工具（按场景拆分）
+│   ├── tools\                     # 23 个工具（按场景拆分）
 │   │   ├── base.py / registry.py
 │   │   ├── cs_tools.py            #   客服工具
 │   │   ├── guide_tools.py         #   导购工具
@@ -127,8 +127,10 @@ PYTHONPATH=src .venv\Scripts\python.exe -X utf8 -m mall_agent.server --port 8002
 data\golden\
 ├── golden_v1.jsonl      # 14 条基础黄金任务
 ├── golden_v2.jsonl      # 23 条难分辨任务（7 难度维度，τ-Bench 风格）
-├── golden_v3.jsonl      # ★ 127 条参数化任务（12 模板：CP/PC/MX/CF/ID/EX/TR/SV/OF/PQ/CO/BD）
-├── golden_safety.jsonl  # 安全任务集（12 边界 + 间接注入 + 合法基线，详见 docs/testset_guide.md）
+├── golden_v3.jsonl      # 103 条参数化任务（12 模板：CP/PC/MX/CF/ID/EX/TR/SV/OF/PQ/CO/BD）
+├── golden_v4_rag.jsonl  # 111 条政策/RAG 扩展任务
+├── golden_v5.jsonl      # 22 条全可判定任务
+├── golden_safety.jsonl  # 16 条安全任务（12 边界 + 间接注入 + 3 合法基线）
 └── manifest*.json       # 版本清单/索引
 ```
 - 生成器：`src/mall_agent/eval/golden/generator_v3.py`（用 mall.sql 真实数据参数化展开）。
@@ -156,23 +158,25 @@ data\loadtest\           # 并发压测结果（loadtest_*.json）
 data\chaos\              # 混沌/容错测试输入
 data\server_lt.log       # 压测日志
 ```
-> 注意：`data/sessions`、`data/reports` 等默认 gitignore——需要保留版本历史时手动 `git add -f`。
+> 注意：`data/sessions`、`data/reports` 等默认 gitignore。运行产物不建议用 `git add -f` 强加进仓库，确需版本化请放独立数据仓库。
 
 ### 4.5 测试代码
 - 评测/测试的**数据驱动源**在 `data/golden`；**可执行代码**主要经 `cli/*.py` 与 `src/mall_agent/eval/*`。
-- 传统 pytest 用例较少（`tests/chaos/`），核心验证方式为上述 CLI 评测 + `docs/experiments/` 报告闭环。
+- 传统 pytest 用例较少（`tests/chaos/`），核心验证方式为上述 CLI 评测 + 本地实验报告。
 - τ-Bench 官方 retail 环境已装入 `.venv`（`tau_bench`），测试走 `cli/tau_bench_test.py`。
 
 ---
 
 ## 5. 文档地图
+
 | 文件 | 内容 |
 |---|---|
-| `README.md` | 主说明（三方案/评测结果/命令速查） |
-| `docs/testset_guide.md` | ★ 测试集指南（127+16 条 task_id 前缀/字段/扩展方法） |
-| `docs/experiments/` | 各实验报告（安全/上下文/权限/Skill/v2&τ-Bench 等） |
-| `task_plan.md / findings.md / progress.md` | 任务规划/发现/进度复盘 |
-| `.env(.example)` | LLM_API_KEY / USER_SIM_* 密钥 |
+| `README.md` | 主说明（三方案 / 评测结果 / 命令速查） |
+| `README-project-struct.md` | 本文：目录结构、调用关系、命令 |
+| `deploy/README.md` | 多实例部署（systemd / nginx） |
+| `docs/`（仅本地，不入库） | 测试集指南与各实验报告 |
+| `progress.md / task_plan.md / findings.md`（仅本地） | 任务规划与进度复盘 |
+| `.env.example` / `config/settings.local.yaml.example` | 配置模板（不含真实密钥） |
 
 ## 6. 关键事实速查
 | 项 | 说明 |

@@ -2,7 +2,7 @@
 
 产出最终对比报告（含跨 harness 一致性）。
 
-用法：python -m mall_agent.cli.exp_matrix --scheme 1,2,3 --policy full,sliding --harness custom,tau --limit 6
+用法：python -m mall_agent.experiments.exp_matrix --scheme 1,2,3 --policy full,sliding --harness custom,tau --limit 6
 """
 from __future__ import annotations
 

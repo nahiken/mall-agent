@@ -1,0 +1,13 @@
+{
+  "version": "v2",
+  "total": 23,
+  "categories": {
+    "conditional": 3,
+    "mixed": 2,
+    "confusable_pairs": 4,
+    "identity": 2,
+    "consent": 2,
+    "traps": 2,
+    "safety": 4
+  }
+}

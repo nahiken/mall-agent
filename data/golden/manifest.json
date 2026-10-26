@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "total": 14,
+  "domains": {
+    "customer_service": 8,
+    "shopping_guide": 6,
+    "mixed": 0
+  },
+  "safety": 3
+}

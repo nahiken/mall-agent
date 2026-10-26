@@ -1,0 +1,72 @@
+# mall-agent nginx 反向代理 + 负载均衡模板（Linux 部署用）
+# 本机 Windows 开发不需要 nginx（uvicorn 直连 :8002 即可）。
+#
+# 用法：
+#   1. 在 Linux 上起多个 mall-agent 实例（不同端口，见 deploy/README.md）
+#   2. 把本文件按需改 server_name/端口 后放入 /etc/nginx/conf.d/mall-agent.conf
+#   3. nginx -t && systemctl reload nginx
+
+upstream mall_agent {
+    # 多实例轮询（Linux 上跑多个 uvicorn worker / systemd 实例）
+    server 127.0.0.1:8002;
+    server 127.0.0.1:8003;
+    server 127.0.0.1:8004;
+    keepalive 32;          # 长连接池：复用与上游的连接，降低握手开销
+}
+
+server {
+    listen 80;
+    server_name agent.example.com;
+
+    # 请求体上限（对话历史较大）
+    client_max_body_size 2m;
+
+    # SSE 流式对话：必须关缓冲，否则事件被 nginx 缓存不实时推送
+    location /api/mall/chat/stream {
+        proxy_pass http://mall_agent;
+        proxy_http_version 1.1;            # 必须 1.1，keepalive 需要
+        proxy_set_header Connection "";
+        proxy_buffering off;               # 关键：关掉 SSE 缓冲
+        proxy_cache off;
+        proxy_read_timeout 300s;           # 长回合 agent 思考期间不掐断
+        proxy_send_timeout 300s;
+        proxy_connect_timeout 10s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        add_header X-Accel-Buffering no;   # 提示 nginx 本响应勿缓冲
+        chunked_transfer_encoding on;      # SSE 需要 chunked
+    }
+
+    # 实时监控 SSE 流（同样关缓冲）
+    location /api/monitor/stream {
+        proxy_pass http://mall_agent;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 300s;
+        add_header X-Accel-Buffering no;
+        chunked_transfer_encoding on;
+    }
+
+    # 其余 API（JSON）：可开缓冲 + gzip
+    location /api/ {
+        proxy_pass http://mall_agent;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 120s;
+        gzip on;
+        gzip_types application/json text/event-stream;
+    }
+
+    # 健康检查
+    location /api/mall/health {
+        proxy_pass http://mall_agent;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "v4_rag",
+  "total": 111,
+  "categories": {
+    "PQ": 12,
+    "APP": 44,
+    "MH": 24,
+    "NUM": 19,
+    "SECURITY": 12
+  },
+  "answer_pool": 99
+}

@@ -1,0 +1,48 @@
+# mall-agent 运行配置（settings.yaml，浅合并覆盖代码默认值）
+llm:
+  provider: openai_compatible   # openai_compatible | ollama
+  api_key_env: LLM_API_KEY
+  base_url: https://api.deepseek.com
+  model: deepseek-chat
+  temperature: 0.0
+  max_tokens: 2048
+
+user_sim:
+  api_key_env: USER_SIM_API_KEY
+  base_url_env: USER_SIM_BASE_URL
+  model_env: USER_SIM_MODEL
+
+mall:
+  api_base: http://127.0.0.1:8085
+  use_mock: true
+  # 本机路径 / 测试账号 / 密码只在 .env 里配置（对应 MALL_* 环境变量），
+  # 或写进不参与 git 的 config/settings.local.yaml。
+  sql_path: ""
+  test_user: agent_test_user
+  test_password: ""
+
+rag:
+  # 本机 RAG-MCP-SERVER 的路径只在 .env 里配置（RAG_MCP_*）。
+  python: ""
+  module: rag_mcp_server.mcp_server.server
+  cwd: ""
+  src: ""
+  index_dir: data/index
+  hubs:                      # 知识库 hub 路由：场景 → (index_dir, collection)
+    cs:      {index_dir: data/index, collection: cs_kb}
+    guide:   {index_dir: data/index, collection: product_kb}
+    policy:  {index_dir: data/index, collection: policy_kb}
+
+agent:
+  max_steps: 15
+  default_context_policy: sliding
+  default_scheme: "1"        # 1=单Agent全工具 2=中心化多Agent 3=Skill懒加载
+
+context:
+  sliding_window_size: 10
+  summary_trigger_messages: 12
+  auto_compress_tokens: 8000   # 自动压缩 token 预算阈值（AutoContext 触发条件之一）
+
+metrics:
+  cost_per_1k_input:  0.0015  # 人民币/1k 输入 token（DeepSeek V4-Flash 缓存未命中·空闲时段：¥1.5/M 输入）
+  cost_per_1k_output: 0.0045  # 人民币/1k 输出 token（V4-Flash 空闲时段：¥4.5/M 输出；高峰×2，未区分按名义价）

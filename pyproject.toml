@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mall-agent"
+version = "0.1.0"
+description = "mall 电商 AI 客服 + 导购学习项目：单Agent vs 多Agent vs Skill 懒加载 对比评测"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "openai>=1.40.0",
+    "mcp>=1.0.0",
+    "httpx>=0.27",
+    "pydantic>=2.5",
+    "pydantic-settings>=2.0",
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0.0",
+    "pandas>=2.0",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "psutil>=5.9",
+]
+
+[project.optional-dependencies]
+tau = ["tau-bench>=0.1.0"]
+dev = ["pytest>=7.0", "pytest-asyncio>=0.23"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

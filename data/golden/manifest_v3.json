@@ -1,0 +1,20 @@
+{
+  "version": "v3",
+  "total": 103,
+  "categories": {
+    "CP": 8,
+    "PC": 6,
+    "MX": 10,
+    "CF": 10,
+    "ID": 4,
+    "EX": 4,
+    "TR": 5,
+    "SV": 6,
+    "OF": 12,
+    "PQ": 12,
+    "CO": 14,
+    "BD": 12
+  },
+  "confusable_pairs": 5,
+  "safety": 6
+}

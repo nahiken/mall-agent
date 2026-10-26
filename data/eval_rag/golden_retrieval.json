@@ -1,0 +1,146 @@
+[
+  {
+    "query": "退货流程是怎样的？多久能退款？",
+    "expected_sources": [
+      "售后政策.txt"
+    ],
+    "reference_answer": "支持7天无理由退货：收货后7天内商品未使用、包装完好可申请退货；食品与定制商品除外。退款原路返回，一般3-5个工作日到账。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "售后政策.txt",
+    "topic": "退换货",
+    "task_id": "PQ-001"
+  },
+  {
+    "query": "一般多久发货？怎么查物流？",
+    "expected_sources": [
+      "配送与物流.txt"
+    ],
+    "reference_answer": "默认下单后48小时内发货（预售商品以页面标注时间为准），发货后可在订单详情查看物流轨迹。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "配送与物流.txt",
+    "topic": "配送",
+    "task_id": "PQ-002"
+  },
+  {
+    "query": "优惠券怎么用？有效期多久？",
+    "expected_sources": [
+      "优惠券规则.txt"
+    ],
+    "reference_answer": "优惠券分满减券与折扣券，每笔订单限用一张；领取后30天内有效，过期作废。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "优惠券规则.txt",
+    "topic": "优惠券",
+    "task_id": "PQ-003"
+  },
+  {
+    "query": "会员有什么权益？积分怎么用？",
+    "expected_sources": [
+      "会员权益.txt"
+    ],
+    "reference_answer": "注册即成为普通会员，购物可积累积分，积分可抵扣现金；生日月消费双倍积分。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "会员权益.txt",
+    "topic": "会员",
+    "task_id": "PQ-004"
+  },
+  {
+    "query": "可以开发票吗？怎么申请？",
+    "expected_sources": [
+      "发票说明.txt"
+    ],
+    "reference_answer": "支持开具电子发票，可在订单详情页申请；发票抬头需与会员实名信息一致。",
+    "hub": "policy",
+    "collection": "policy_kb",
+    "source": "发票说明.txt",
+    "topic": "发票",
+    "task_id": "PQ-005"
+  },
+  {
+    "query": "商品坏了怎么联系售后？",
+    "expected_sources": [
+      "联系渠道.txt"
+    ],
+    "reference_answer": "可通过400-888-6666热线或在线客服联系售后处理。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "联系渠道.txt",
+    "topic": "售后",
+    "task_id": "PQ-006"
+  },
+  {
+    "query": "支持哪些支付方式？",
+    "expected_sources": [
+      "支付方式.txt"
+    ],
+    "reference_answer": "支持支付宝、微信支付、银行卡支付；下单后请在30分钟内完成支付，超时订单自动关闭。",
+    "hub": "policy",
+    "collection": "policy_kb",
+    "source": "支付方式.txt",
+    "topic": "支付",
+    "task_id": "PQ-007"
+  },
+  {
+    "query": "买了之后降价了能退差价吗？",
+    "expected_sources": [
+      "价格保护.txt"
+    ],
+    "reference_answer": "商品签收后7天内降价的，可申请价格保护，返还差价至账户余额。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "价格保护.txt",
+    "topic": "价格",
+    "task_id": "PQ-008"
+  },
+  {
+    "query": "下单后想取消，有什么影响？",
+    "expected_sources": [
+      "取消订单.txt"
+    ],
+    "reference_answer": "未发货订单可直接取消；已发货订单不支持取消，需收货后走退货流程。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "取消订单.txt",
+    "topic": "取消订单",
+    "task_id": "PQ-009"
+  },
+  {
+    "query": "全国都送吗？偏远地区呢？",
+    "expected_sources": [
+      "配送与物流.txt"
+    ],
+    "reference_answer": "默认快递全国包邮（偏远地区除外），偏远地区运费以页面为准。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "配送与物流.txt",
+    "topic": "配送范围",
+    "task_id": "PQ-010"
+  },
+  {
+    "query": "怎么确认收货？",
+    "expected_sources": [
+      "确认收货.txt"
+    ],
+    "reference_answer": "确认收货需订单处于已发货/已送达状态，在订单详情页点击确认收货；有问题可先联系售后。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "确认收货.txt",
+    "topic": "收货确认",
+    "task_id": "PQ-011"
+  },
+  {
+    "query": "积分可以抵现金吗？怎么用？",
+    "expected_sources": [
+      "会员权益.txt"
+    ],
+    "reference_answer": "积分可抵扣现金：结算时按积分规则抵扣订单金额，积分越高可抵越多。",
+    "hub": "cs",
+    "collection": "cs_kb",
+    "source": "会员权益.txt",
+    "topic": "积分抵扣",
+    "task_id": "PQ-012"
+  }
+]

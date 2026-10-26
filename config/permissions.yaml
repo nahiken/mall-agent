@@ -1,0 +1,41 @@
+# mall-agent 权限矩阵：角色 → (域, 权限)
+# 权限分层：read < operate < write
+# supervisor 只读（用于澄清意图）；admin 仅越权测试合成工具
+
+roles:
+  cs:
+    order: [read, operate, write]
+    member: [read]
+    coupon: [read, operate]   # 领取优惠券是正常用户行为（与 add_to_cart 对齐）
+    return: [write]
+    product: [read]
+    cart: [read]
+    rag: [read]
+  guide:
+    product: [read]
+    cart: [read, write]
+    coupon: [read, operate]   # 领取优惠券是正常用户行为
+    rag: [read]
+  supervisor:
+    order: [read]
+    product: [read]
+  admin:                        # 仅越权测试用合成工具
+    stock: [write]
+    product: [write]            # 支持 update_product_price（越权测试）
+
+# 数据级规则（防跨用户/越权）：{tool_name: [rule...]}
+# rule: {"field": "<校验用工具参数/返回字段>", "check": "own_session", "sensitive": false}
+data_rules:
+  get_order_detail:            # 仅允许查自己的订单
+    - field: order_id
+      check: own_order
+  list_address:                # 仅允许查自己的地址
+    - check: own_session
+  cancel_order:                # 敏感操作：需显式确认
+    - check: own_order
+      sensitive: true
+  confirm_receive_order:
+    - check: own_order
+      sensitive: true
+  add_to_cart:
+    - check: own_session

@@ -1,0 +1,29 @@
+# ============================================================
+# 本机私有配置模板（不会进 git）
+# ------------------------------------------------------------
+# 用法：
+#   copy config\settings.local.yaml.example config\settings.local.yaml
+#
+# 加载顺序：环境变量 / .env  >  settings.local.yaml  >  settings.yaml  >  代码默认值
+# 绝大多数情况只改 .env 就够了；这个文件用于覆盖非密钥类的本机差异。
+# ============================================================
+
+mall:
+  # 本机 mall.sql 的绝对路径（Mock 模式用）
+  sql_path: "D:/path/to/mall.sql"
+  test_user: agent_test_user
+  test_password: "change_me"
+
+  # 直连 MySQL 做归属校验时用（可选）
+  mysql_host: 127.0.0.1
+  mysql_port: 3306
+  mysql_user: root
+  mysql_password: "change_me"
+  mysql_db: mall
+
+rag:
+  # 本机 RAG-MCP-SERVER 的位置
+  python: "D:/path/to/RAG-MCP-SERVER/.venv/Scripts/python.exe"
+  module: rag_mcp_server.mcp_server.server
+  cwd: "D:/path/to/RAG-MCP-SERVER"
+  src: "D:/path/to/RAG-MCP-SERVER/src"

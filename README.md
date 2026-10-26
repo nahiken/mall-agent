@@ -13,7 +13,6 @@ Python 3.11+ · LangGraph · OpenAI 兼容 LLM · FastAPI · MCP
 - [核心能力](#核心能力)
 - [架构](#架构)
 - [评测结果](#评测结果)
-- [数据集](#数据集)
 - [快速开始](#快速开始)
 - [配置项](#配置项)
 - [运行评测与实验](#运行评测与实验)
@@ -55,7 +54,7 @@ Python 3.11+ · LangGraph · OpenAI 兼容 LLM · FastAPI · MCP
 - **上下文策略**：`full` / `sliding` / `summarize` / `hier`，以及服务端的自动压缩。
 - **Skill 懒加载**：按意图路由后只注册相关工具，减少 schema 占用与误调用。
 - **RAG 接入**：通过 MCP stdio 调外部 `RAG-MCP-SERVER`（客服/导购/政策三个知识库）。
-- **自建评测 harness**：黄金数据集 + τ-Bench 风格环境 + 双 harness 交叉验证。
+- **双 harness 评测**：同一批任务在 custom 与 τ-Bench 风格环境交叉验证。
 - **安全护栏**：幻觉防护（空结果注入约束）、越权拦截、间接提示注入检测、误拒率。
 - **HTTP 服务层**：SSE 流式对话、会话持久化、实时监控、并发压测。
 
@@ -86,7 +85,7 @@ Python 3.11+ · LangGraph · OpenAI 兼容 LLM · FastAPI · MCP
 
 ## 评测结果
 
-以下数据来自真实 LLM（DeepSeek），黄金数据集 v1。
+以下数据来自真实 LLM（DeepSeek），每个方案跑 4 个任务。
 
 ### 三方案主结果（3 方案 × 双 harness × 4 任务）
 
@@ -99,21 +98,6 @@ Python 3.11+ · LangGraph · OpenAI 兼容 LLM · FastAPI · MCP
 | 每任务成本（¥） | 0.006 | 0.010 | **0.005** |
 
 **结论**：方案 1 最直接（步数少、零绕路），方案 3 最省 token（比方案 2 省 46%），方案 2 隔离强但调度开销最大。跨 harness 一致率 **12/12 = 1.00**。
-
-### 安全边界（12 条边界用例）
-
-| 指标 | 方案 1 | 方案 2 | 方案 3 |
-|------|--------|--------|--------|
-| 总体通过率 | 67% | 50% | **75%** |
-| 拒绝越权（降价/改库存/批量） | 6/6 | 6/6 | 6/6 |
-| 不编造（幻觉） | 0/3 | 0/3 | 0/3 |
-| 不泄露他人信息 | 1/3 | 0/3 | **3/3** |
-
-- **越权拒绝**三方案全过——LLM 判断已足够，权限层是兜底。
-- **幻觉是最大弱点**（0/3）：面对不存在的商品/订单会编造价格与物流。
-- **方案 3 隐私保护最好**（3/3）；方案 2 的拒绝最含糊。
-
-> 安全集共 16 条：12 条边界 + 1 条间接提示注入 + 3 条合法基线（用于误拒率）。
 
 ### τ-Bench 官方零售环境
 
@@ -145,27 +129,6 @@ Average reward: 1.0（3/3 任务满分，DB 哈希判定）
 - 最大并发 **256 不崩**，错误率 0；64 并发内 P95 < 5s；延迟敏感建议 ≤ 16 并发（P95 ≈ 1.4s）。
 - 瓶颈是**单进程 CPU**（QPS 稳定 14–19，与并发档位无关），更高吞吐需多实例（见 `deploy/`）。
 - 真实 LLM 下并发主要受供应商限速影响，实际约 10–30 并发。
-
-## 数据集
-
-`data/golden/` 下按版本演进，均为 JSONL（一行一个任务）：
-
-| 数据集 | 条数 | 说明 |
-|--------|------|------|
-| `golden_v1.jsonl` | 14 | 基础集：客服 + 导购混合 |
-| `golden_v2.jsonl` | 23 | 难分辨集：条件偏好、多子目标、confusable 对、身份确认、显式授权、干扰、安全变体 |
-| `golden_v3.jsonl` | 103 | 参数化批量生成：12 个模板 + 变体展开 |
-| `golden_v4_rag.jsonl` | 111 | 政策/知识问答扩展（PQ / RAG 相关） |
-| `golden_v5.jsonl` | 22 | 全可判定集：either 状态断言或 key_facts 非空 |
-| `golden_safety.jsonl` | 16 | 安全集：边界 + 间接注入 + 合法基线 |
-
-数据由生成器/脚本产出，**不要手工改 JSONL**：
-
-```bash
-python -X utf8 -m mall_agent.cli.eval --gen        # v1/v2/v3
-python -X utf8 -m mall_agent.eval.golden.policy_dataset   # v4
-python scripts/make_v5.py                          # v5
-```
 
 ## 快速开始
 
@@ -251,9 +214,6 @@ python -X utf8 -m mall_agent.cli.run_agent --scheme 3 "推荐一款 3000 元以�
 # 三方案评测（custom harness）
 python -X utf8 -m mall_agent.cli.eval --scheme 1,2,3 --policy sliding --limit 6
 
-# 指定数据集（默认 v1）
-python -X utf8 -m mall_agent.cli.eval --dataset data/golden/golden_v5.jsonl --scheme 1 --limit 10
-
 # 并发 + 关键任务门槛 + 用户模拟器
 python -X utf8 -m mall_agent.cli.eval --scheme 1 --limit 10 --concurrency 4
 python -X utf8 -m mall_agent.cli.eval --scheme 1 --limit 10 --critical-ids CP-001,CF-002A,CO-001
@@ -324,11 +284,11 @@ mall-agent/
 │   ├── context/         # full / sliding / summarize / hier
 │   ├── mall_api/        # 真实 client + Mock（读 mall.sql）
 │   ├── rag/             # RAG-MCP stdio 客户端
-│   ├── eval/            # 数据集生成、harness、指标、报告
+│   ├── eval/            # harness、指标、报告
 │   ├── server/          # FastAPI + SSE + 监控
 │   └── cli/             # 命令行入口
 ├── config/              # settings / permissions / 本机配置模板
-├── data/golden/         # 黄金数据集（提交）
+├── data/golden/         # 评测任务数据（提交）
 ├── scripts/             # 审计、生成、发布脚本
 ├── tests/               # 混沌测试
 └── deploy/              # systemd / nginx 多实例模板
@@ -372,7 +332,7 @@ git status --short
 ## 已知限制
 
 - **外部依赖**：真实客服链路依赖 Java 版 mall；RAG 依赖外部 `RAG-MCP-SERVER`。仓库内只保证 Mock 链路可独立运行。
-- **评测规模**：主表基于 v1 的 4 个任务、单次试验，适合看相对趋势，不宜当绝对性能结论。
+- **评测规模**：主表基于 4 个任务、单次试验，适合看相对趋势，不宜当绝对性能结论。
 - **幻觉判定**：`HallucinationDetector` 是规则 + 信号启发式，不是严格事实核查。
 - **并发结论**：容量数据来自 Mock 模式单机，真实 LLM 下主要受供应商限速约束。
 - **平台**：脚本与示例以 Windows 为主，Linux/macOS 需自行替换路径写法。
